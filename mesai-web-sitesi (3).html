@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>mesAI — Yapay zekâ hızında, insan güvencesinde operasyon ekibi</title>
+<meta name="description" content="E-postalarınız, takviminiz ve raporlarınız yapay zekâ ile otomatik yürür; insan denetimiyle güvende kalır. Tam zamanlı çalışan maliyeti olmadan.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Figtree:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#10222B;          /* mürekkep laciverti */
+  --ink-soft:#3C5560;
+  --paper:#F2F6F6;        /* soğuk kağıt */
+  --card:#FFFFFF;
+  --turkuaz:#0E9594;      /* ana vurgu */
+  --turkuaz-dk:#0B6E6D;
+  --amber:#E8A13D;        /* acil / dikkat */
+  --line:#D6E2E2;
+  --ok:#2E9E5B;
+  --radius:14px;
+  --disp:"Bricolage Grotesque",sans-serif;
+  --body:"Figtree",sans-serif;
+  --mono:"IBM Plex Mono",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--body);color:var(--ink);background:var(--paper);line-height:1.6;font-size:17px}
+img{max-width:100%}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* ---------- header ---------- */
+header{position:sticky;top:0;z-index:50;background:rgba(242,246,246,.85);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:68px}
+.logo{font-family:var(--disp);font-weight:800;font-size:24px;letter-spacing:-.5px;text-decoration:none}
+.logo span{color:var(--turkuaz)}
+.nav-links{display:flex;gap:28px;list-style:none}
+.nav-links a{text-decoration:none;font-size:15px;font-weight:500;color:var(--ink-soft)}
+.nav-links a:hover{color:var(--turkuaz-dk)}
+.btn{display:inline-block;background:var(--turkuaz);color:#fff;text-decoration:none;font-weight:600;font-size:15.5px;padding:12px 22px;border-radius:10px;border:2px solid var(--turkuaz);transition:.18s}
+.btn:hover{background:var(--turkuaz-dk);border-color:var(--turkuaz-dk)}
+.btn.ghost{background:transparent;color:var(--turkuaz-dk)}
+.btn.ghost:hover{background:var(--turkuaz);color:#fff}
+.btn:focus-visible,a:focus-visible,summary:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+@media(max-width:760px){.nav-links{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:72px 0 40px}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center}
+.eyebrow{font-family:var(--mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--turkuaz-dk);margin-bottom:18px}
+h1{font-family:var(--disp);font-weight:800;font-size:clamp(34px,4.6vw,56px);line-height:1.06;letter-spacing:-1.2px}
+h1 em{font-style:normal;color:var(--turkuaz)}
+.hero p.lead{margin:22px 0 30px;font-size:19px;color:var(--ink-soft);max-width:34em}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap}
+.hero-note{margin-top:14px;font-size:14px;color:var(--ink-soft)}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr}.hero{padding-top:48px}}
+
+/* ---------- canlı triyaj demosu (imza öğesi) ---------- */
+.demo{background:var(--ink);border-radius:18px;padding:18px;box-shadow:0 24px 60px -24px rgba(16,34,43,.45)}
+.demo-bar{display:flex;align-items:center;gap:8px;padding:0 4px 12px}
+.dot{width:10px;height:10px;border-radius:50%;background:#2E4550}
+.demo-title{margin-left:auto;font-family:var(--mono);font-size:12px;color:#8FB4B4}
+.inbox{background:#0C1A21;border-radius:12px;padding:10px;min-height:328px;display:flex;flex-direction:column;gap:8px;overflow:hidden}
+.mail{background:#13262F;border:1px solid #1E3641;border-radius:10px;padding:11px 13px;display:flex;align-items:center;gap:11px;opacity:0;transform:translateY(-8px);transition:opacity .4s,transform .4s}
+.mail.show{opacity:1;transform:none}
+.mail .from{font-family:var(--mono);font-size:12.5px;color:#9FC4C4;white-space:nowrap}
+.mail .subj{font-size:13.5px;color:#E7F1F1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.tag{font-family:var(--mono);font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;white-space:nowrap;opacity:0;transform:scale(.7);transition:opacity .3s,transform .3s}
+.tag.on{opacity:1;transform:scale(1)}
+.tag.talep{background:rgba(14,149,148,.18);color:#41C9C8;border:1px solid rgba(65,201,200,.4)}
+.tag.acil{background:rgba(232,161,61,.15);color:#F0B25C;border:1px solid rgba(240,178,92,.45)}
+.tag.fatura{background:rgba(159,196,196,.12);color:#9FC4C4;border:1px solid rgba(159,196,196,.35)}
+.tag.bilgi{background:rgba(120,140,150,.15);color:#A9BCC4;border:1px solid rgba(169,188,196,.3)}
+.draft{margin-top:auto;background:linear-gradient(120deg,rgba(14,149,148,.16),rgba(14,149,148,.05));border:1px dashed rgba(65,201,200,.5);border-radius:10px;padding:12px 14px;opacity:0;transform:translateY(6px);transition:opacity .45s,transform .45s}
+.draft.show{opacity:1;transform:none}
+.draft .d-head{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11.5px;color:#41C9C8;margin-bottom:6px}
+.pulse{width:7px;height:7px;border-radius:50%;background:#41C9C8;animation:pulse 1.4s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.draft .d-body{font-size:13px;color:#CFE4E4;line-height:1.5}
+.draft .d-foot{margin-top:8px;font-size:12px;color:#8FB4B4}
+.draft .d-foot strong{color:#F0B25C;font-weight:600}
+
+/* ---------- güven şeridi ---------- */
+.strip{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:var(--card)}
+.strip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0}
+.strip-item{padding:26px 28px;border-left:1px solid var(--line);display:flex;gap:14px;align-items:flex-start}
+.strip-item:first-child{border-left:none}
+.strip-item svg{flex:none;margin-top:3px}
+.strip-item b{display:block;font-size:15.5px;font-weight:600}
+.strip-item span{font-size:14px;color:var(--ink-soft)}
+@media(max-width:820px){.strip-grid{grid-template-columns:1fr}.strip-item{border-left:none;border-top:1px solid var(--line)}.strip-item:first-child{border-top:none}}
+
+/* ---------- bölüm iskeleti ---------- */
+section{padding:84px 0}
+.sec-head{max-width:640px;margin-bottom:48px}
+h2{font-family:var(--disp);font-weight:800;font-size:clamp(28px,3.4vw,40px);letter-spacing:-.8px;line-height:1.12}
+.sec-head p{margin-top:14px;color:var(--ink-soft);font-size:17.5px}
+
+/* ---------- hizmetler ---------- */
+.serv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.serv{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px;display:flex;flex-direction:column;gap:10px;transition:transform .18s,box-shadow .18s}
+.serv:hover{transform:translateY(-3px);box-shadow:0 16px 36px -20px rgba(16,34,43,.35)}
+.serv h3{font-family:var(--disp);font-size:19px;font-weight:600}
+.serv p{font-size:15px;color:var(--ink-soft);flex:1}
+.oran{font-family:var(--mono);font-size:12.5px;color:var(--turkuaz-dk)}
+.oran b{font-weight:600}
+.oran-bar{height:5px;background:var(--paper);border-radius:99px;overflow:hidden}
+.oran-bar i{display:block;height:100%;background:var(--turkuaz);border-radius:99px}
+@media(max-width:900px){.serv-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.serv-grid{grid-template-columns:1fr}}
+
+/* ---------- sayaç bandı ---------- */
+.counter-band{background:var(--ink);color:#E7F1F1;border-radius:22px;padding:56px 48px;display:grid;grid-template-columns:1.1fr 1fr 1fr 1fr;gap:36px;align-items:center}
+.counter-band h2{color:#fff}
+.counter-band .cb-lead{font-size:15.5px;color:#9FC4C4;margin-top:12px}
+.stat .num{font-family:var(--mono);font-weight:600;font-size:clamp(30px,3.6vw,44px);color:#41C9C8;letter-spacing:-1px}
+.stat .lbl{font-size:14px;color:#9FC4C4;margin-top:4px}
+@media(max-width:900px){.counter-band{grid-template-columns:1fr 1fr;padding:40px 28px}}
+@media(max-width:560px){.counter-band{grid-template-columns:1fr}}
+
+/* ---------- nasıl çalışır ---------- */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:adim}
+.step{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:28px;position:relative}
+.step::before{counter-increment:adim;content:counter(adim,decimal-leading-zero);font-family:var(--mono);font-size:13px;color:var(--turkuaz-dk);letter-spacing:.1em}
+.step h3{font-family:var(--disp);font-size:20px;font-weight:600;margin:10px 0 8px}
+.step p{font-size:15px;color:var(--ink-soft)}
+.step .süre{display:inline-block;margin-top:14px;font-family:var(--mono);font-size:12px;background:var(--paper);border:1px solid var(--line);border-radius:99px;padding:4px 12px;color:var(--ink-soft)}
+@media(max-width:820px){.steps{grid-template-columns:1fr}}
+
+/* ---------- paketler ---------- */
+.plans{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch}
+.plan{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:30px;display:flex;flex-direction:column}
+.plan.featured{border:2px solid var(--turkuaz);position:relative;box-shadow:0 22px 48px -24px rgba(14,149,148,.4)}
+.plan.featured::before{content:"En çok tercih edilen";position:absolute;top:-13px;left:24px;background:var(--turkuaz);color:#fff;font-size:12px;font-weight:600;padding:3px 12px;border-radius:99px}
+.plan h3{font-family:var(--disp);font-size:22px;font-weight:800}
+.plan .kime{font-size:14px;color:var(--ink-soft);margin:6px 0 18px;min-height:42px}
+.plan ul{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:24px;flex:1}
+.plan li{font-size:15px;padding-left:26px;position:relative}
+.plan li::before{content:"";position:absolute;left:0;top:6px;width:15px;height:15px;border-radius:50%;background:var(--turkuaz);mask:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.4"><path d="M20 6L9 17l-5-5"/></svg>') center/contain no-repeat;-webkit-mask:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3.4"><path d="M20 6L9 17l-5-5"/></svg>') center/contain no-repeat}
+.plan .fiyat{font-size:14px;color:var(--ink-soft);margin-bottom:16px}
+.plan .fiyat b{font-family:var(--mono);color:var(--ink)}
+@media(max-width:900px){.plans{grid-template-columns:1fr}}
+
+/* ---------- SSS ---------- */
+.sss{max-width:760px}
+details{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+summary{cursor:pointer;list-style:none;padding:20px 24px;font-weight:600;font-size:16.5px;display:flex;justify-content:space-between;align-items:center;gap:16px}
+summary::after{content:"+";font-family:var(--mono);font-size:20px;color:var(--turkuaz);transition:transform .2s}
+details[open] summary::after{transform:rotate(45deg)}
+details .cevap{padding:0 24px 20px;color:var(--ink-soft);font-size:15.5px}
+
+/* ---------- son çağrı + footer ---------- */
+.final{background:var(--ink);color:#fff;border-radius:22px;padding:64px 48px;text-align:center}
+.final h2{color:#fff}
+.final p{color:#9FC4C4;max-width:34em;margin:16px auto 30px}
+footer{padding:36px 0 48px;color:var(--ink-soft);font-size:14px}
+.foot{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;align-items:center}
+
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+  .mail,.tag,.draft{opacity:1!important;transform:none!important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#">mes<span>AI</span></a>
+    <ul class="nav-links">
+      <li><a href="#hizmetler">Hizmetler</a></li>
+      <li><a href="#nasil">Nasıl çalışır</a></li>
+      <li><a href="#paketler">Paketler</a></li>
+      <li><a href="#sss">SSS</a></li>
+    </ul>
+    <a class="btn" href="#iletisim">Ücretsiz süreç denetimi</a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="eyebrow">AI destekli operasyon hizmeti · Türkiye</div>
+      <h1>Gelen kutunuz kendi kendini yönetsin. <em>Son söz sizde kalsın.</em></h1>
+      <p class="lead">E-postalarınız sınıflandırılır, yanıt taslakları hazırlanır, raporlarınız yazılır — yapay zekâ hızında, insan denetiminde. Tam zamanlı bir çalışanın maliyeti olmadan.</p>
+      <div class="hero-ctas">
+        <a class="btn" href="#iletisim">30 dakikalık ücretsiz denetim al</a>
+        <a class="btn ghost" href="#nasil">Nasıl çalıştığını gör</a>
+      </div>
+      <p class="hero-note">Kredi kartı yok, taahhüt yok. İlk görüşmede en çok zamanınızı harcayan 3 işi birlikte buluyoruz.</p>
+    </div>
+
+    <!-- imza öğesi: canlı triyaj demosu -->
+    <div class="demo" aria-label="Canlı örnek: e-postaların otomatik sınıflandırılması">
+      <div class="demo-bar">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="demo-title">gelen-kutusu · canlı</span>
+      </div>
+      <div class="inbox" id="inbox">
+        <div class="draft" id="draft">
+          <div class="d-head"><span class="pulse"></span> YANIT TASLAĞI HAZIRLANDI</div>
+          <div class="d-body">"Merhaba, teklif talebiniz için teşekkürler. Hangi ürünle ilgilendiğinizi paylaşırsanız aynı gün dönüş yapalım…"</div>
+          <div class="d-foot"><strong>Gönderilmedi.</strong> Onay her zaman sizde.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GÜVEN ŞERİDİ -->
+<div class="strip">
+  <div class="wrap strip-grid">
+    <div class="strip-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E9594" stroke-width="2"><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
+      <div><b>Hiçbir şey otomatik gönderilmez</b><span>Yanıtlar taslak olarak bekler; son onay her zaman insandadır.</span></div>
+    </div>
+    <div class="strip-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E9594" stroke-width="2"><path d="M8 11V7a4 4 0 118 0v4"/><rect x="4" y="11" width="16" height="9" rx="2"/></svg>
+      <div><b>Rehin almıyoruz</b><span>Tüm sistemler sizin hesaplarınızda kurulur. Ayrılırsanız belgeleriyle devrederiz.</span></div>
+    </div>
+    <div class="strip-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0E9594" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg>
+      <div><b>Sonuç garantili pilot</b><span>İlk ay ölçülebilir zaman kazandıramazsak kurulum ücretini iade ederiz.</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- HİZMETLER -->
+<section id="hizmetler">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Saat satmıyoruz. Bitmiş iş teslim ediyoruz.</h2>
+      <p>Her hizmet, "yapılacak" değil "yapılmış" olarak tanımlanır. Yanındaki oran, işin ne kadarının insan müdahalesi olmadan yürüdüğünü gösterir.</p>
+    </div>
+    <div class="serv-grid">
+      <div class="serv"><h3>E-posta yönetimi</h3><p>Gelen kutunuz her gün sınıflandırılır; standart taleplere yanıt taslağı hazırlanır, acil olanlar anında size bildirilir.</p><div class="oran"><b>%80</b> otomatik</div><div class="oran-bar"><i style="width:80%"></i></div></div>
+      <div class="serv"><h3>Takvim &amp; toplantı</h3><p>Toplantılar çakışmasız planlanır; davet, hatırlatma ve toplantı notları kendiliğinden hazırlanır.</p><div class="oran"><b>%90</b> otomatik</div><div class="oran-bar"><i style="width:90%"></i></div></div>
+      <div class="serv"><h3>Müşteri iletişimi</h3><p>Müşteri sorularına ilk yanıt 5 dakikada; karmaşık talepler size yönlendirilir, haftalık talep raporu masanızda.</p><div class="oran"><b>%70</b> otomatik</div><div class="oran-bar"><i style="width:70%"></i></div></div>
+      <div class="serv"><h3>Veri &amp; raporlama</h3><p>Veri girişi kendiliğinden işlenir; haftalık ve aylık performans raporlarınız hazır PDF olarak gelir.</p><div class="oran"><b>%85</b> otomatik</div><div class="oran-bar"><i style="width:85%"></i></div></div>
+      <div class="serv"><h3>Teklif &amp; doküman</h3><p>Teklif ve sözleşmeleriniz şablondan dakikalar içinde, marka kimliğinize uygun olarak üretilir.</p><div class="oran"><b>%75</b> otomatik</div><div class="oran-bar"><i style="width:75%"></i></div></div>
+      <div class="serv"><h3>Sosyal medya desteği</h3><p>Aylık içerik takvimi ve gönderi metinleri hazırlanır; onayınızdan sonra zamanlanmış paylaşım yapılır.</p><div class="oran"><b>%60</b> otomatik</div><div class="oran-bar"><i style="width:60%"></i></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- SAYAÇ BANDI -->
+<section style="padding-top:0">
+  <div class="wrap">
+    <div class="counter-band">
+      <div>
+        <h2>Tasarruf, hissedilmez. Ölçülür.</h2>
+        <p class="cb-lead">Her müşterimiz, sistemin kendisi için ne yaptığını canlı panosundan izler: işlenen e-posta, hazırlanan taslak, kazanılan saat.</p>
+      </div>
+      <div class="stat"><div class="num" data-count="412">0</div><div class="lbl">e-posta / ay otomatik işlenir*</div></div>
+      <div class="stat"><div class="num" data-count="87">0</div><div class="lbl">yanıt taslağı / ay hazırlanır*</div></div>
+      <div class="stat"><div class="num" data-count="23" data-suffix=" sa">0</div><div class="lbl">geri kazanılan zaman / ay*</div></div>
+    </div>
+    <p style="margin-top:12px;font-size:12.5px;color:var(--ink-soft)">*Örnek değerlerdir; sizin panonuz kendi gerçek verinizle çalışır.</p>
+  </div>
+</section>
+
+<!-- NASIL ÇALIŞIR -->
+<section id="nasil" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Üç adımda devrediyorsunuz</h2>
+      <p>Sıralama gerçek süreçtir: önce ölçüyoruz, sonra küçük başlıyoruz, işe yaradığını gördüğünüzde büyütüyoruz.</p>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Ücretsiz süreç denetimi</h3><p>30 dakikalık görüşmede işinizde en çok zaman harcayan 3 işi birlikte tespit ediyoruz. Satış konuşması değil, röntgen.</p><span class="süre">30 dk · ücretsiz</span></div>
+      <div class="step"><h3>Pilot kurulum</h3><p>Tek bir alanı (örn. e-posta) devralıyoruz. Ay sonunda önce/sonra rakamlarını birlikte okuyoruz: kaç saat geri kazandınız?</p><span class="süre">1 ay · kurulum ücretiyle</span></div>
+      <div class="step"><h3>Abonelik &amp; büyütme</h3><p>Rakamlar sizi ikna ederse aboneliğe geçiyoruz; her ay yeni bir süreç ekleyerek operasyonunuzu adım adım hafifletiyoruz.</p><span class="süre">aylık · iptali serbest</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PAKETLER -->
+<section id="paketler" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>Paketler</h2>
+      <p>Net fiyat, ücretsiz denetim görüşmesinde ihtiyacınıza göre belirlenir — sürpriz kalem yok, kurulum + aylık abonelik, bu kadar.</p>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <h3>Başlangıç</h3>
+        <div class="kime">Serbest çalışanlar ve mikro işletmeler için.</div>
+        <ul>
+          <li>1 süreç alanı (e-posta veya takvim)</li>
+          <li>Hafta içi insan desteği</li>
+          <li>Aylık özet raporu</li>
+        </ul>
+        <div class="fiyat">Kurulum: <b>1 aylık ücret</b> · sonrası aylık abonelik</div>
+        <a class="btn ghost" href="#iletisim">Denetimle başla</a>
+      </div>
+      <div class="plan featured">
+        <h3>Büyüme</h3>
+        <div class="kime">5–30 kişilik KOBİ'ler için. Bir çalışan maliyetinin çok altında.</div>
+        <ul>
+          <li>3 süreç alanı + canlı tasarruf panosu</li>
+          <li>Öncelikli yanıt + haftalık görüşme</li>
+          <li>Aylık optimizasyon: her ay bir iyileştirme</li>
+        </ul>
+        <div class="fiyat">Kurulum: <b>1,5 aylık ücret</b> · sonrası aylık abonelik</div>
+        <a class="btn" href="#iletisim">Denetimle başla</a>
+      </div>
+      <div class="plan">
+        <h3>Kurumsal</h3>
+        <div class="kime">30+ kişilik ekipler ve çoklu departmanlar için.</div>
+        <ul>
+          <li>Sınırsız alan + size özel iş akışları</li>
+          <li>Atanmış operasyon sorumlusu</li>
+          <li>KVKK uyumlu veri işleme sözleşmesi</li>
+        </ul>
+        <div class="fiyat">Kurulum: <b>keşfe göre teklif</b></div>
+        <a class="btn ghost" href="#iletisim">Görüşme planla</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SSS -->
+<section id="sss" style="padding-top:0">
+  <div class="wrap">
+    <div class="sec-head"><h2>Sık sorulanlar</h2></div>
+    <div class="sss">
+      <details>
+        <summary>Yapay zekâ müşterime yanlış bir şey gönderirse?</summary>
+        <div class="cevap">Gönderemez. Sistem mimari olarak dışarıya otomatik e-posta atamaz; yapay zekâ yalnızca taslak hazırlar, gönder tuşuna her zaman insan basar. En kritik güvencemiz budur ve sözleşmeye yazılır.</div>
+      </details>
+      <details>
+        <summary>Verilerim nerede tutuluyor?</summary>
+        <div class="cevap">Sizin hesaplarınızda. Sistemler kendi Google/Microsoft hesabınız üzerinde, sizin verdiğiniz yetkilerle kurulur; şifreniz istenmez, verileriniz bize taşınmaz. İş birliği biterse her şey belgeleriyle size devredilir.</div>
+      </details>
+      <details>
+        <summary>Hazır araçlar (Zapier vb.) varken size neden ihtiyacım olsun?</summary>
+        <div class="cevap">Araç, işin %20'si. Kurulumu, bakımı, bozulduğunda onarımı ve istisnaları yöneten insan katmanı asıl hizmettir. Araç bir gece hata verdiğinde fark edip düzelten biri olması ile olmaması arasındaki farkı, ilk arıza gününde görürsünüz.</div>
+      </details>
+      <details>
+        <summary>Sözleşme süresi ve iptal koşulları nedir?</summary>
+        <div class="cevap">Aylık çalışırız, uzun vadeli taahhüt istemeyiz. İptal ettiğinizde kurulan sistemler hesaplarınızda çalışır halde kalır; dileyene devir dokümantasyonu hazırlarız.</div>
+      </details>
+      <details>
+        <summary>Pilot ayında sonuç alamazsam?</summary>
+        <div class="cevap">Pilot başında birlikte bir ölçüt belirleriz (örn. "e-postaya harcanan haftalık süre"). Ay sonunda ölçülebilir kazanç yoksa kurulum ücretinizi iade ederiz. Riski biz alıyoruz çünkü sonucu ölçüyoruz.</div>
+      </details>
+    </div>
+  </div>
+</section>
+
+<!-- SON ÇAĞRI -->
+<section id="iletisim" style="padding-top:0">
+  <div class="wrap">
+    <div class="final">
+      <h2>En çok zamanınızı harcayan 3 işi bulalım.</h2>
+      <p>30 dakikalık ücretsiz süreç denetimi: işinizi dinliyoruz, otomasyona en uygun süreçleri işaretliyoruz, size yazılı bir mini yol haritası bırakıyoruz. Almak zorunda olduğunuz hiçbir şey yok.</p>
+      <a class="btn" style="font-size:17px;padding:15px 30px" href="mailto:mesai.contact@gmail.com?subject=Ücretsiz süreç denetimi talebi">Denetim randevusu al</a>
+      <p style="margin-top:16px;font-size:14px">veya WhatsApp: <a href="https://wa.me/905417496103" style="color:#41C9C8">0541 749 61 03</a></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <div><span class="logo" style="font-size:19px">mes<span style="color:var(--turkuaz)">AI</span></span> — Yapay zekâ hızında, insan güvencesinde.</div>
+    <div>Türkiye · mesai.contact@gmail.com</div>
+  </div>
+</footer>
+
+<script>
+/* ---- canlı triyaj demosu ---- */
+const MAILS=[
+  {from:"ayse@...",subj:"Ürünleriniz için fiyat teklifi alabilir miyim?",tag:"talep",cls:"talep",lbl:"Müşteri Talebi"},
+  {from:"kargo@...",subj:"ACİL: Teslimatta sorun, bugün dönüş gerekli",tag:"acil",cls:"acil",lbl:"Acil"},
+  {from:"muhasebe@...",subj:"Haziran ayı faturanız ektedir",tag:"fatura",cls:"fatura",lbl:"Fatura/Ödeme"},
+  {from:"bulten@...",subj:"Haftalık sektör bülteni #142",tag:"bilgi",cls:"bilgi",lbl:"Bilgilendirme"},
+  {from:"mehmet@...",subj:"Toplu sipariş için görüşebilir miyiz?",tag:"talep",cls:"talep",lbl:"Müşteri Talebi"}
+];
+const inbox=document.getElementById("inbox");
+const draft=document.getElementById("draft");
+const reduced=window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function makeMail(m){
+  const el=document.createElement("div");
+  el.className="mail";
+  el.innerHTML='<span class="from">'+m.from+'</span><span class="subj">'+m.subj+'</span><span class="tag '+m.cls+'">'+m.lbl+'</span>';
+  return el;
+}
+function runDemo(){
+  let i=0;
+  function next(){
+    if(i>=MAILS.length){
+      setTimeout(()=>draft.classList.add("show"),400);
+      setTimeout(()=>{ // döngü: temizle ve baştan
+        draft.classList.remove("show");
+        inbox.querySelectorAll(".mail").forEach(m=>m.remove());
+        i=0; setTimeout(next,900);
+      },6500);
+      return;
+    }
+    const m=makeMail(MAILS[i]);
+    inbox.insertBefore(m,draft);
+    requestAnimationFrame(()=>requestAnimationFrame(()=>m.classList.add("show")));
+    setTimeout(()=>m.querySelector(".tag").classList.add("on"),650);
+    i++; setTimeout(next,1050);
+  }
+  next();
+}
+if(reduced){
+  MAILS.forEach(m=>{const el=makeMail(m);el.classList.add("show");el.querySelector(".tag").classList.add("on");inbox.insertBefore(el,draft);});
+  draft.classList.add("show");
+}else{ runDemo(); }
+
+/* ---- sayaç ---- */
+const nums=document.querySelectorAll(".num");
+function animate(el){
+  const target=+el.dataset.count, suf=el.dataset.suffix||"";
+  if(reduced){el.textContent=target+suf;return;}
+  const dur=1400, t0=performance.now();
+  function tick(t){
+    const p=Math.min((t-t0)/dur,1), eased=1-Math.pow(1-p,3);
+    el.textContent=Math.round(target*eased)+suf;
+    if(p<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){animate(e.target);io.unobserve(e.target)}}),{threshold:.5});
+nums.forEach(n=>io.observe(n));
+</script>
+</body>
+</html>
